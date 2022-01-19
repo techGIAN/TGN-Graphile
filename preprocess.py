@@ -70,22 +70,34 @@ ones_percent = ones/total
 zeros_percent = zeros/total
 
 count = 0
+# TRAINING and VALIDATION
+train_df = pd.read_csv(train_path, header=None)
+train_df.columns = ['user_id', 'item_id', 'edge_type', 'timestamp', 'feat']
+train_df = train_df.drop(['feat'], axis=1)
+train_copy_df = train_df.copy(deep=True)
+
+# TESTING
+test_df = pd.read_csv(test_path, header=None)
+test_df.columns = ['user_id', 'item_id', 'edge_type',
+                'start_time', 'end_time']
+test_copy_df = test_df.copy(deep=True)
+edge_types = test_df['edge_type'].unique()
+edge_types.sort()
+
 for i in range(1, N_batches+2):
-    test_sample_amount = 200000 - test_sample_amount*N_batches if i == N_batches else batch_size # if = 695, else = 1545
-    train_sample_amount = int(test_sample_amount/0.2*0.8)if i == N_batches else batch_size-test_sample_amount # if = 7031, else = 6181
+    
+    test_sample_amount = 200000 - test_sample_amount*N_batches if i == N_batches else test_sample_amount # if = 695, else = 1545
+    train_sample_amount = int(test_sample_amount/0.2*0.8) if i == N_batches else batch_size-test_sample_amount # if = 2780, else = 6181
     train_ones_batch = int(ones_percent*train_sample_amount)
-    train_zeros_batch = train_sample_amount-int(ones_percent*train_sample_amount)
+    train_zeros_batch = train_sample_amount-train_ones_batch
 
     # TRAINING and VALIDATION
-    df = pd.read_csv(train_path, header=None)
-    df.columns = ['user_id', 'item_id', 'edge_type', 'timestamp', 'feat']
-    df = df.drop(['feat'], axis=1)
-
-    indices = list(df.index)
+    indices = list(train_df.index)
     positive_ix = rnd.sample(indices, k=train_ones_batch)
     indices = list(set(indices).difference(set(positive_ix)))
     negative_ix = rnd.sample(indices, k=train_zeros_batch)
 
+    df = train_copy_df.copy(deep=True)
     pos_df = df.iloc[positive_ix].reset_index().drop(['index'], axis=1)
     neg_df = df.iloc[negative_ix].reset_index().drop(['index'], axis=1)
     pos_df['state_label'] = 1
@@ -103,25 +115,18 @@ for i in range(1, N_batches+2):
     new_df = pd.concat([pos_df, neg_df])
     new_df = new_df.drop(['edge_type'], axis=1)
 
-    # new_df.to_csv('./datasets/datasetB/final_batches/' + data_type + '1.csv', index=False)
 
     # TESTING
-    df = pd.read_csv(test_path, header=None)
-    df.columns = ['user_id', 'item_id', 'edge_type',
-                    'start_time', 'end_time']
-
-    edge_types = df['edge_type'].unique()
-    edge_types.sort()
-
     low_ix = test_sample_amount*(i-1)
     high_ix = test_sample_amount*i
+
+    df = test_df.copy(deep=True)
     df = df.iloc[low_ix:high_ix,:]
     df['timestamp'] = 0
     df['timestamp'] = df.apply(df_time_aggregate, args=('random_between',), axis=1)
     df['state_label'] = 1
     df['comma_separated_list_of_features'] = df['edge_type'].apply(df_one_hot, args=(edge_types,))
     df = df.drop(['edge_type', 'start_time', 'end_time'], axis=1)
-    # df.to_csv('./datasets/datasetB/final_' + data_type + '2.csv', index=False)
 
     new_df = pd.concat([new_df, df])
     new_df = new_df.reset_index().rename(columns={'index':'id'})

@@ -20,3 +20,12 @@ chmod u+x ./preprocess.sh
 ./preprocess.sh
 ```
 What you essentially get are batches of datasets coming from the training and testing sets of the original downloaded files, to which we feed to TGN for each batch -- and then concatenate the predictions afterwards.
+
+### B. Running TGN
+1) Open ```wsdm.sh``` and check lines 17-37 whether changes have to be made (depending on the dataset). Line 17 is the number of batche created from A. Line 20 is the dataset and lines 23-37 are the hyperparameters.
+2) Then run using these commands:
+```
+chmod u+x ./wsdm.sh
+./wsdm.sh
+```
+The predicted probabiltiies for the test data are under ```prob/pos``` whose prefix is ```pos_probX.txt``` and their IDs with ```pos_idX.txt```. We will make necessary postprocessing of the data later for final submission.

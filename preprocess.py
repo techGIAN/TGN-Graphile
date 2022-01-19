@@ -86,8 +86,8 @@ edge_types.sort()
 
 for i in range(1, N_batches+2):
     
-    test_sample_amount = 200000 - test_sample_amount*N_batches if i == N_batches else test_sample_amount # if = 695, else = 1545
-    train_sample_amount = int(test_sample_amount/0.2*0.8) if i == N_batches else batch_size-test_sample_amount # if = 2780, else = 6181
+    test_sample_amount = 200000 - test_sample_amount*N_batches if i == N_batches+1 else test_sample_amount # if = 695, else = 1545
+    train_sample_amount = int(test_sample_amount/0.2*0.8) if i == N_batches+1 else batch_size-test_sample_amount # if = 2780, else = 6181
     train_ones_batch = int(ones_percent*train_sample_amount)
     train_zeros_batch = train_sample_amount-train_ones_batch
 
@@ -103,9 +103,6 @@ for i in range(1, N_batches+2):
     pos_df['state_label'] = 1
     neg_df['state_label'] = 0
 
-    edge_types = df['edge_type'].unique()
-    edge_types.sort()
-
     pos_df['comma_separated_list_of_features'] = pos_df['edge_type'].apply(df_one_hot, args=(edge_types,))
     neg_df['comma_separated_list_of_features'] = neg_df['edge_type'].apply(df_one_hot, args=(edge_types,))
 
@@ -114,6 +111,7 @@ for i in range(1, N_batches+2):
 
     new_df = pd.concat([pos_df, neg_df])
     new_df = new_df.drop(['edge_type'], axis=1)
+    new_df = new_df.reset_index().drop(['index'], axis=1)
 
 
     # TESTING
@@ -129,9 +127,10 @@ for i in range(1, N_batches+2):
     df = df.drop(['edge_type', 'start_time', 'end_time'], axis=1)
 
     new_df = pd.concat([new_df, df])
+    new_df = new_df.reset_index().drop(['index'], axis=1)
     new_df = new_df.reset_index().rename(columns={'index':'id'})
     new_df['id'] = new_df['id'] + count
-    count = new_df.shape[0]
+    count = new_df.shape[0]*i
 
     new_df = new_df.sort_values(by=['timestamp'])
     new_df['id'] = new_df['id'].astype('int64')
@@ -141,6 +140,5 @@ for i in range(1, N_batches+2):
     new_df['state_label'] = new_df['state_label'].astype('int64')
     new_df['comma_separated_list_of_features'] = new_df['comma_separated_list_of_features'].astype('str')
 
-    # new_df.to_csv('./datasets/datasetB/final_' + data_type + '.csv', index=False)
     new_df.to_csv('./datasets/datasetB/final_batches/final_' + data_type + str(i) + '.csv', index=False)
     print('Batch {} complete'.format(i))

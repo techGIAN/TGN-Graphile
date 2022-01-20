@@ -75,9 +75,9 @@ def get_data(dataset_name, different_new_nodes_between_val_and_test=False, rando
   labels = graph_df.label.values
   timestamps = graph_df.ts.values
 
-  train_ids = ids[:int(np.ceil(for_val*len(ids)))]
-  val_ids = ids[int(np.ceil(for_val*len(ids))):int(np.ceil(for_test*len(ids)))]
-  test_ids = ids[int(np.ceil(for_test*len(ids))):]
+  train_ids = ids[:int(for_val*len(ids))] # 5408 data [0:5408]
+  val_ids = ids[int(for_val*len(ids)):int(for_test*len(ids))+1] # 773 data [5408:6181]
+  test_ids = ids[int(for_test*len(ids))+1:] # 1545 data [6181:7726]
 
   full_data = Data(sources, destinations, timestamps, edge_idxs, labels)
 

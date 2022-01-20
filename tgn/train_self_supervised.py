@@ -343,9 +343,9 @@ for i in range(args.n_runs):
     "total_epoch_times": total_epoch_times
   }, open(results_path, "wb"))
 
-  logger.info('Saving TGN model')
+  # logger.info('Saving TGN model')
   if USE_MEMORY:
     # Restore memory at the end of validation (save a model which is ready for testing)
     tgn.memory.restore_memory(val_memory_backup)
-  torch.save(tgn.state_dict(), MODEL_SAVE_PATH)
-  logger.info('TGN model saved')
+  # torch.save(tgn.state_dict(), MODEL_SAVE_PATH)
+  # logger.info('TGN model saved')

@@ -3,17 +3,14 @@
 now=$(date +"%T")
 echo "Current time : $now"
 
-DIR="./data/"
+DIR="./data/final_batch"
 mkdir -p $DIR
 
-SRC_DIR="../datasets/datasetB/final_batch/"
+SRC_DIR="../../datasets/datasetB/final_batch/"
 cp -r $SRC_DIR $DIR
 
-# MY_FILES=ls ./data/final_batch/ | wc -l
-# echo $n_batches
-# exit 0
 
-i=2
+i=1
 n_batches=131 # need to specify number of batches + 1
 while [ $i -lt $n_batches ]
 do
@@ -37,8 +34,8 @@ do
         --message_function mlp
     
     echo "TGN Batch $i complete"
+    now=$(date +"%T")
+    echo "Current time : $now"
+
     i=$(( i+1 ))
 done
-
-now=$(date +"%T")
-echo "Current time : $now"

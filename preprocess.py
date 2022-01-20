@@ -70,7 +70,7 @@ ones_percent = ones/total
 zeros_percent = zeros/total
 
 count = 0
-# TRAINING and VALIDATION
+# TRAINING 
 train_df = pd.read_csv(train_path, header=None)
 train_df.columns = ['user_id', 'item_id', 'edge_type', 'timestamp', 'feat']
 train_df = train_df.drop(['feat'], axis=1)
@@ -81,25 +81,27 @@ test_df = pd.read_csv(test_path, header=None)
 test_df.columns = ['user_id', 'item_id', 'edge_type',
                 'start_time', 'end_time']
 test_copy_df = test_df.copy(deep=True)
+earliest_timestamp = test_df['start_time'].min()
 edge_types = test_df['edge_type'].unique()
 edge_types.sort()
+
+train_df = train_df[train_df['timestamp'] < earliest_timestamp]
 
 for i in range(1, N_batches+2):
     
     test_sample_amount = 200000 - test_sample_amount*N_batches if i == N_batches+1 else test_sample_amount # if = 695, else = 1545
     train_sample_amount = int(test_sample_amount/0.2*0.8) if i == N_batches+1 else batch_size-test_sample_amount # if = 2780, else = 6181
-    train_ones_batch = int(ones_percent*train_sample_amount)
-    train_zeros_batch = train_sample_amount-train_ones_batch
+    train_ones_batch = int(ones_percent*train_sample_amount) # if = 1619, else = 3601
+    train_zeros_batch = train_sample_amount-train_ones_batch # if = 1161, else = 2580
 
-    # TRAINING and VALIDATION
+    # TRAINING
     indices = list(train_df.index)
     positive_ix = rnd.sample(indices, k=train_ones_batch)
     indices = list(set(indices).difference(set(positive_ix)))
     negative_ix = rnd.sample(indices, k=train_zeros_batch)
 
-    df = train_copy_df.copy(deep=True)
-    pos_df = df.iloc[positive_ix].reset_index().drop(['index'], axis=1)
-    neg_df = df.iloc[negative_ix].reset_index().drop(['index'], axis=1)
+    pos_df = train_df.iloc[positive_ix].reset_index().drop(['index'], axis=1)
+    neg_df = train_df.iloc[negative_ix].reset_index().drop(['index'], axis=1)
     pos_df['state_label'] = 1
     neg_df['state_label'] = 0
 
@@ -110,8 +112,8 @@ for i in range(1, N_batches+2):
     neg_df['timestamp'] = neg_df.apply(df_corrupt, args=(temp_neg,), axis=1)
 
     new_df = pd.concat([pos_df, neg_df])
-    new_df = new_df.drop(['edge_type'], axis=1)
     new_df = new_df.reset_index().drop(['index'], axis=1)
+    new_df = new_df.drop(['edge_type'], axis=1)
 
 
     # TESTING
@@ -126,6 +128,7 @@ for i in range(1, N_batches+2):
     df['comma_separated_list_of_features'] = df['edge_type'].apply(df_one_hot, args=(edge_types,))
     df = df.drop(['edge_type', 'start_time', 'end_time'], axis=1)
 
+
     new_df = pd.concat([new_df, df])
     new_df = new_df.reset_index().drop(['index'], axis=1)
     new_df = new_df.reset_index().rename(columns={'index':'id'})
@@ -133,6 +136,10 @@ for i in range(1, N_batches+2):
     count = new_df.shape[0]*i
 
     new_df = new_df.sort_values(by=['timestamp'])
+    new_df = new_df.reset_index().drop(['index'], axis=1)
+
+
+
     new_df['id'] = new_df['id'].astype('int64')
     new_df['timestamp'] = new_df['timestamp'].astype('int64')
     new_df['user_id'] = new_df['user_id'].astype('int64')
@@ -142,3 +149,6 @@ for i in range(1, N_batches+2):
 
     new_df.to_csv('./datasets/datasetB/final_batches/final_' + data_type + str(i) + '.csv', index=False)
     print('Batch {} complete'.format(i))
+
+
+    

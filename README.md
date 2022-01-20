@@ -30,8 +30,8 @@ chmod u+x ./wsdm.sh
 ```
 The predicted probabiltiies for the test data are under ```prob/pos``` whose prefix is ```pos_probX.txt``` and their IDs with ```pos_idX.txt```. We will make necessary postprocessing of the data later for final submission.
 
-<b>Note:</b>
-There is a bug that we cannot fix for some reason. So please check. Go to ```prob/pos/pos_idX.txt``` where ```X``` is the last batch. Ensure that the first ID in that file is the first ID of the test data of the last batch (which can be conveniently found under ```data/final_batch/final_BX.csv```. If it is not, then change it. It is important that the dimensions of ```prob/pos/pos_idX.txt``` and ```prob/pos/pos_probX.txt``` are the same. Otherwise, Part C below will fail.
+<b>Note:</b> <br>
+There is a bug that we cannot fix for some reason. So please check. Go to ```prob/pos/pos_idX.txt``` where ```X``` is the last batch. Ensure that the first ID in that file is the first ID of the test data of the last batch (which can be conveniently found under ```data/final_batch/final_BX.csv```. If it is not, then change it. It is important that the dimensions of ```prob/pos/pos_idX.txt``` and ```prob/pos/pos_probX.txt``` are the same. Otherwise, Part C below will fail. <br>
 <i>We have resolved this, but still check for any bugs that occur.</i>
 
 ### C. Postprocessing

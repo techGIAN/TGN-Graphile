@@ -9,9 +9,16 @@ out_path = './prob/'
 my_files = [f for f in listdir(original_path) if isfile(join(original_path, f))]
 my_files = [x for x in my_files if '._' not in x]
 N_batches = len(my_files)
+batch_size = 50000
+first_test_id = int(batch_size*0.8)
 
 all_df = pd.DataFrame(columns=['id', 'pred'])
 for i in range(1, N_batches+1):
+
+
+    # get the first id of the test data for each batch -- to resolve the bug
+    final_batch_data = pd.read_csv(original_path + 'final_B{}.csv'.format(i))
+    first_id = int(final_batch_data.iloc[first_test_id,0:1])
 
     with open(path + 'pos_prob{}.txt'.format(i)) as f:
         lines = f.readlines()
@@ -25,10 +32,11 @@ for i in range(1, N_batches+1):
     with open(path + 'pos_id{}.txt'.format(i)) as f:
         lines = f.readlines()
 
-    iDs = []
+    iDs = [first_id]
     for line in lines:
         l = line.strip()
-        iDs.append(l)
+        iDs.append(int(l))
+    
     
     pred_df = pd.DataFrame({'id': iDs, 'pred': probs}) # contains the probabilities
     pred_df = pred_df.sort_values(by=['id'])

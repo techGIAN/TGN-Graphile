@@ -63,6 +63,7 @@ ones = df[df['state_label'] == 1].shape[0]
 zeros = df[df['state_label'] == 0].shape[0]
 total = df.shape[0] #3863
 batch_size = total*2 #7726
+batch_size = 50000
 test_sample_amount = int(batch_size*0.2) # 1545
 N_batches = int(200000/test_sample_amount) #129
 
@@ -93,6 +94,9 @@ for i in range(1, N_batches+2):
     train_sample_amount = int(test_sample_amount/0.2*0.8) if i == N_batches+1 else batch_size-test_sample_amount # if = 2780, else = 6181
     train_ones_batch = int(ones_percent*train_sample_amount) # if = 1619, else = 3601
     train_zeros_batch = train_sample_amount-train_ones_batch # if = 1161, else = 2580
+
+    if test_sample_amount == 0:
+        break # extra remainder batch not needed because remainder is 0.
 
     # TRAINING
     indices = list(train_df.index)

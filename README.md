@@ -34,7 +34,7 @@ For dataset B, here are the hyperparameters:
 ```
 --n_epoch 1 \
 --use_memory \
---prefix tgn-attn-final_$1 \
+--prefix tgn-attn-final_B \
 --n_runs 1 \
 --n_degree 5 \
 --n_head 8 \

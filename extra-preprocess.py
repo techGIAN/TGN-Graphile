@@ -1,14 +1,17 @@
 from os import listdir
 from os.path import isfile, join
+import sys
 
-mypath = './datasets/datasetB/final_batches/'
+data_type = sys.argv[1]
+
+mypath = './datasets/dataset{}/final_batches/'.format(data_type)
 csv_files = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 csv_files = [x for x in csv_files if '._' not in x]
 
-targetpath =  './datasets/datasetB/final_batch/'
+targetpath =  './datasets/dataset{}/final_batch/'.format(data_type)
 count = 1
 for my_file in csv_files:
-    txt_file = open(targetpath + 'final_B' + str(count) +'.csv', 'w')
+    txt_file = open(targetpath + 'final_' + data_type + str(count) +'.csv', 'w')
     text = ''
     # print(mypath + my_file)
     with open(mypath + my_file) as f:

@@ -63,7 +63,7 @@ ones = df[df['state_label'] == 1].shape[0]
 zeros = df[df['state_label'] == 0].shape[0]
 total = df.shape[0] #3863
 batch_size = total*2 #7726
-batch_size = 50000
+batch_size = 50000 # We incresed to 50,000 per batch
 test_sample_amount = int(batch_size*0.2) # 1545
 N_batches = int(200000/test_sample_amount) #129
 
@@ -151,7 +151,7 @@ for i in range(1, N_batches+2):
     new_df['state_label'] = new_df['state_label'].astype('int64')
     new_df['comma_separated_list_of_features'] = new_df['comma_separated_list_of_features'].astype('str')
 
-    new_df.to_csv('./datasets/datasetB/final_batches/final_' + data_type + str(i) + '.csv', index=False)
+    new_df.to_csv('./datasets/dataset' + data_type + '/final_batches/final_' + data_type + str(i) + '.csv', index=False)
     print('Batch {} complete'.format(i))
 
 

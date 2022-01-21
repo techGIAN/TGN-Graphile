@@ -1,27 +1,31 @@
 #!/bin/sh
 
-now=$(date +"%T")
-echo "Current time : $now"
+start=$(date +"%T")
+echo "Start time : $start"
 
 DIR="./data/final_batch"
 mkdir -p $DIR
 
-SRC_DIR="../../datasets/datasetB/final_batch/"
+SRC_DIR="../../datasets/dataset$1/final_batch/"
 cp -r $SRC_DIR $DIR
 
+ITEMS=$(ls $DIR | wc -l | tr -s " ")
+ITEMS=${ITEMS%% }
+ITEMS=${ITEMS## }
 
 i=1
-n_batches=131 # need to specify number of batches + 1
-while [ $i -lt $n_batches ]
+n_batches="$ITEMS"
+
+while [ $i -le $n_batches ]
 do
-    dataset="final_B$i"
+    dataset="final_$1$i"
 
     python3 utils/preprocess_data.py --data $dataset && \
     python3 train_self_supervised.py \
         -d $dataset \
         --n_epoch 1 \
         --use_memory \
-        --prefix tgn-attn-final_B \
+        --prefix tgn-attn-final_$1 \
         --n_runs 1 \
         --n_degree 5 \
         --n_head 8 \
@@ -34,8 +38,12 @@ do
         --message_function mlp
     
     echo "TGN Batch $i complete"
-    now=$(date +"%T")
-    echo "Current time : $now"
 
     i=$(( i+1 ))
 done
+
+end=$(date +"%T")
+echo "End time : $end"
+
+runtime=$((end-start))
+echo "Total runtime: $runtime"

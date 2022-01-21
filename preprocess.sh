@@ -1,13 +1,13 @@
 #!/bin/sh
 
-DIR="./datasets/datasetB/final_batches/"
+DIR="./datasets/dataset$1/final_batches/"
 mkdir -p $DIR
-DIR="./datasets/datasetB/final_batch/"
+DIR="./datasets/dataset$1/final_batch/"
 mkdir -p $DIR
 
-TRAIN="./datasets/datasetB/edges_train_B.csv"
-VAL="./datasets/datasetB/input_B_initial.csv"
-TEST="./datasets/datasetB/final_input_B.csv"
+TRAIN="./datasets/dataset$1/edges_train_$1.csv"
+VAL="./datasets/datasetB$1/input_$1_initial.csv"
+TEST="./datasets/dataset$1/final_input_$1.csv"
 
 
-python3 preprocess.py $TRAIN $VAL $TEST && python3 extra-preprocess.py
+python3 preprocess.py $TRAIN $VAL $TEST && python3 extra-preprocess.py $1

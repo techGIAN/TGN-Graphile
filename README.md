@@ -4,6 +4,15 @@ Using <a href="https://github.com/twitter-research/tgn">Rossi et. al.'s</a> TGN 
 ## Abstract
 We used the framework TGN developed by Rossi et. al. (2020). Basically it has a module that stores the up-to-date state of each node the model has seen so far, which could help with the temporal link prediction task. After preprocessing the data, we trained the model and did the prediction using the tuned parameters for dataset A and dataset B respectively.
 
+## Package Dependencies
+Please use ```python >= 3.7``` along with the following packages installed:
+```
+pandas==1.1.0
+torch==1.6.0
+scikit_learn==0.23.1
+```
+
+
 ## Hyperparameters
 For dataset A, here are the hyperparameters:
 ```
